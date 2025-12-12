@@ -17,10 +17,6 @@ app.use(express.json());
 // 2. Database Connection Setup (The SSL issue may still be present later)
 const db = new Pool({
   connectionString: process.env.DATABASE_URL,
-  ssl: {
-    require: true,
-    rejectUnauthorized: false, 
-  }
 });
 // --- API Endpoints ---
 
