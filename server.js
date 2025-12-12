@@ -33,5 +33,16 @@ app.post("/add-comment", async (req, res) => {
   }
 });
 
+app.get("/comments", async (req, res) => {
+  try {
+    const result = await db.query("SELECT * FROM comments ORDER BY id DESC");
+    res.json(result.rows);
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ error: "Server error" });
+  }
+});
+
+
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log("Backend running on port " + PORT));
