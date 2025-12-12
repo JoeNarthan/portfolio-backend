@@ -16,6 +16,7 @@ const db = new Pool({
   }
 });
 
+
 app.post("/add-comment", async (req, res) => {
   try {
     const { message } = req.body;
