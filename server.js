@@ -10,24 +10,18 @@ app.use(express.json());
 
 const db = new Pool({
   connectionString: process.env.DATABASE_URL,
-  ssl: {
-    rejectUnauthorized: false
-  }
+  ssl: { rejectUnauthorized: false }
 });
 
 app.post("/add-comment", async (req, res) => {
   try {
     const { message } = req.body;
-
-    if (!message || !message.trim()) {
-      return res.json({ error: "Empty comment" });
-    }
+    if (!message?.trim()) return res.json({ error: "Empty comment" });
 
     await db.query("INSERT INTO comments (message) VALUES ($1)", [message]);
     res.json({ success: true });
-
   } catch (err) {
-    console.error("ERROR:", err);
+    console.log(err);
     res.status(500).json({ error: err.message });
   }
 });
@@ -37,10 +31,10 @@ app.get("/comments", async (req, res) => {
     const result = await db.query("SELECT * FROM comments ORDER BY id DESC");
     res.json(result.rows);
   } catch (err) {
-    console.error("ERROR:", err);
+    console.log(err);
     res.status(500).json({ error: err.message });
   }
 });
 
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`Backend running on port ${PORT}`));
+app.listen(PORT, () => console.log("Backend running on port " + PORT));
