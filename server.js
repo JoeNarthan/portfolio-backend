@@ -10,8 +10,7 @@ app.use(cors());
 app.use(express.json());
 
 const db = new Pool({
-  connectionString: process.env.DATABASE_URL,
-  ssl: { rejectUnauthorized: false }
+  connectionString: process.env.DATABASE_URL
 });
 
 app.post("/add-comment", async (req, res) => {
