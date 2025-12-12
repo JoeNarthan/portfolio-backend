@@ -10,7 +10,10 @@ app.use(express.json());
 
 const db = new Pool({
   connectionString: process.env.DATABASE_URL,
-  ssl: { rejectUnauthorized: false }
+  ssl: {
+    require: true,
+    rejectUnauthorized: false
+  }
 });
 
 app.post("/add-comment", async (req, res) => {
