@@ -1,9 +1,9 @@
 // server.js
 
 // 1. Fix: Using CommonJS 'require' for broader compatibility (unless your package.json specifies "type": "module")
-const express = require("express");
-const cors = require("cors");
-const pkg = require("pg"); // Using 'pkg' as the alias for the 'pg' module
+import express, { json } from "express";
+import cors from "cors";
+import pkg from "pg"; // Using 'pkg' as the alias for the 'pg' module
 
 const { Pool } = pkg;
 
@@ -11,7 +11,7 @@ const app = express();
 
 // Middleware setup
 app.use(cors());
-app.use(express.json());
+app.use(json());
 
 // 2. Database Connection Setup
 // NOTE: If you get a 'self-signed certificate' error, change 'rejectUnauthorized: true' to 'rejectUnauthorized: false'
@@ -28,7 +28,7 @@ const db = new Pool({
 // --- API Endpoints ---
 
 // 3. Health Check Endpoint (Crucial to prevent SIGTERM in deployments)
-app.get('/', (req, res) => {
+app.get('/', (_req, res) => {
   res.status(200).json({ 
     status: 'Server Running', 
     service: 'Comment API',
@@ -53,7 +53,7 @@ app.post("/add-comment", async (req, res) => {
 });
 
 // Endpoint to get all comments
-app.get("/comments", async (req, res) => {
+app.get("/comments", async (_req, res) => {
   try {
     const result = await db.query("SELECT * FROM comments ORDER BY id DESC");
     res.status(200).json(result.rows);
