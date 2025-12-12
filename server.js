@@ -19,12 +19,9 @@ const db = new Pool({
   connectionString: process.env.DATABASE_URL,
   ssl: {
     require: true,
-    // Keep 'rejectUnauthorized: true' and be ready to change it 
-    // if the 'self-signed certificate' error returns.
     rejectUnauthorized: true, 
   }
 });
-
 // --- API Endpoints ---
 
 // Health Check Endpoint (For Deployment Readiness Probes)
