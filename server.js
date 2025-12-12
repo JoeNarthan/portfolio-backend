@@ -1,38 +1,37 @@
-// server.js
+// server.js (ES Module Version)
 
-// 1. Fix: Using CommonJS 'require' for broader compatibility (unless your package.json specifies "type": "module")
-import express, { json } from "express";
+// 1. CRITICAL FIX: Use 'import' instead of 'require'
+import express from "express";
 import cors from "cors";
-import pkg from "pg"; // Using 'pkg' as the alias for the 'pg' module
+import pkg from "pg";
 
-const { Pool } = pkg;
+// When importing an entire package in ESM, we access its named exports like this.
+const { Pool } = pkg; 
 
 const app = express();
 
 // Middleware setup
 app.use(cors());
-app.use(json());
+app.use(express.json());
 
-// 2. Database Connection Setup
-// NOTE: If you get a 'self-signed certificate' error, change 'rejectUnauthorized: true' to 'rejectUnauthorized: false'
-// for development, or add the 'ca' property with your database's root certificate for production.
+// 2. Database Connection Setup (The SSL issue may still be present later)
 const db = new Pool({
   connectionString: process.env.DATABASE_URL,
   ssl: {
     require: true,
+    // Keep 'rejectUnauthorized: true' and be ready to change it 
+    // if the 'self-signed certificate' error returns.
     rejectUnauthorized: true, 
-    // ca: fs.readFileSync('/path/to/your/root.crt').toString(), // Uncomment and set path for secure cloud connections
   }
 });
 
 // --- API Endpoints ---
 
-// 3. Health Check Endpoint (Crucial to prevent SIGTERM in deployments)
-app.get('/', (_req, res) => {
+// Health Check Endpoint (For Deployment Readiness Probes)
+app.get('/', (req, res) => {
   res.status(200).json({ 
     status: 'Server Running', 
-    service: 'Comment API',
-    database_check: 'Pending on API call' 
+    service: 'Comment API'
   });
 });
 
@@ -53,20 +52,18 @@ app.post("/add-comment", async (req, res) => {
 });
 
 // Endpoint to get all comments
-app.get("/comments", async (_req, res) => {
+app.get("/comments", async (req, res) => {
   try {
     const result = await db.query("SELECT * FROM comments ORDER BY id DESC");
     res.status(200).json(result.rows);
   } catch (err) {
     console.error("Error fetching comments:", err.message);
-    // Note: Database connection errors usually hit here first
     res.status(500).json({ error: "Failed to retrieve comments", details: err.message });
   }
 });
 
 
-// 4. Server Listener
-// Using process.env.PORT for deployment flexibility, falling back to 3000
+// 3. Server Listener
 const PORT = process.env.PORT || 3000;
 const HOST = '0.0.0.0';
 
