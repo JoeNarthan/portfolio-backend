@@ -28,8 +28,8 @@ app.post("/add-comment", async (req, res) => {
 
     res.json({ success: true });
   } catch (err) {
-    console.log(err);
-    res.status(500).json({ error: "Server error" });
+    console.error("DATABASE ERROR:", err);
+    res.status(500).json({ error: err.message });
   }
 });
 
